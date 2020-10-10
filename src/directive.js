@@ -9,7 +9,7 @@ function event (name) {
 }
 
 export default function (el, binding) {
-  var config = binding.value
+  var config = binding.value;
   if (Array.isArray(config) || typeof config === 'string') {
     config = {
       mask: config,
@@ -57,6 +57,20 @@ export default function (el, binding) {
       }, 0)
     }
     el.dispatchEvent(event('input'))
+  }
+
+  el.onblur = function(evt) {
+      if (config.mask) {
+        if (Array.isArray(config.mask)) {
+          const valueMatchesMask = config.mask.some(m => el.value.length === m.length);
+          if (valueMatchesMask) {
+            return;
+          }
+          el.value = '';
+        } else if (el.value.length < config.mask.length) {
+          el.value = '';
+        }
+      }
   }
 
   var newDisplay = masker(el.value, config.mask, true, config.tokens)
